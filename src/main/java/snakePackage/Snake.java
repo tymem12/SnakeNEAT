@@ -70,6 +70,18 @@ public class Snake {
         }
 
     }
+    public void makeDecision(double[] output){
+
+    }
+    public void doWholeMove(){
+
+    }
+
+    public double[] generateInputTable(){
+        double[] retInputTable = new double[26];
+
+       return retInputTable;
+    }
 
     public void checkApples() {
         if((xLocation[0] == xAppleLocation) && (yLocation[0] == yAppleLocation)) {
@@ -100,6 +112,22 @@ public class Snake {
             snakeAlive = false;
         }
 
+
+    }
+
+    public void moveUP(){
+        if(getActualDirection() != Directions.DOWN) setActualDirection(Snake.Directions.UP);
+    }
+    public void moveDOWN(){
+        if(getActualDirection() != Directions.UP)setActualDirection(Snake.Directions.DOWN);
+
+    }
+    public void moveRIGHT(){
+        if(getActualDirection() != Directions.LEFT) setActualDirection(Snake.Directions.RIGHT);
+
+    }
+    public void moveLEFT(){
+        if(getActualDirection() != Directions.RIGHT) setActualDirection(Snake.Directions.LEFT);
 
     }
 

@@ -6,19 +6,25 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import snakePackage.Game;
+import neat_pac.Neat;
+import snakePackage.GameAnimation;
+import snakePackage.Simulation;
 import snakePackage.Snake;
+import snakePackage.SnakeGameplay;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class HelloController implements Initializable {
    private boolean gameIsRunning = false;
-    Game game;
+    SnakeGameplay gameplay;
 
+    @FXML
+    private Button runButton, nextGenButton;
     @FXML
     private MenuItem startGameButton;
     @FXML
@@ -27,14 +33,28 @@ public class HelloController implements Initializable {
     private GraphicsContext graphicsContext;
 
     public void startGameAction(ActionEvent event) {
-        System.out.println("działa");
-        game = new Game(this);
-        game.runGame();
+        System.out.println("działaGierka");
+        gameplay = new GameAnimation(this);
         gameIsRunning = true;
+        gameplay.run();
         //po rozpoczęciu gry TUTAJ MOŻEMY ZACZĄĆ MYŚLEĆ
 
     }
+    public void prepareSimulation(ActionEvent event){
+        int CLIENTS = 100;
+        Neat neat = new Neat(26, 4,CLIENTS);
+        System.out.println("działaSymulacja");
+        gameplay = new Simulation( neat, this);
+        gameIsRunning = false;
 
+
+    }
+    public void runSimulation(ActionEvent event){
+        gameplay.run();
+    }
+    public void generateSimulation(ActionEvent event){
+
+    }
 
 
     @Override
@@ -69,16 +89,16 @@ public class HelloController implements Initializable {
         if(gameIsRunning){
             switch (code){
                 case UP :
-                    game.moveUP();
+                    gameplay.getSnake().moveUP();
                     break;
                 case DOWN :
-                    game.moveDOWN();
+                    gameplay.getSnake().moveDOWN();
                     break;
                 case RIGHT:
-                    game.moveRIGHT();
+                    gameplay.getSnake().moveRIGHT();
                     break;
                 case LEFT:
-                    game.moveLEFT();
+                    gameplay.getSnake().moveLEFT();
                     break;
             }
         }

@@ -16,6 +16,12 @@ public class Calculator {
     private ArrayList<Node> hidden_nodes = new ArrayList<>();
     private ArrayList<Node> output_nodes = new ArrayList<>();
 
+
+
+    /*
+    when we create Calculator - practically always when we create new individual, we want to create Nodes and Connections
+    in the same configuration as in NodesGenes and ConnectionGenes. We do that to calculate output of each layer
+     */
     public Calculator(Genome g){
         RandomHashSet<NodeGene> nodes = g.getNodes();
         RandomHashSet<ConnectionGene> cons = g.getConnections();
@@ -58,6 +64,9 @@ public class Calculator {
         }
     }
 
+    /*
+    for every node in every layer we call calculate to calculate output of every node.
+     */
     public double[] calculate(double... input){
 
         if(input.length != input_nodes.size()) throw new RuntimeException("Data doesnt fit");

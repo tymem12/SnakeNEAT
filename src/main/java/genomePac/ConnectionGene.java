@@ -6,6 +6,14 @@ import neat_pac.Neat;
 
 public class ConnectionGene extends Gene {
 
+    /*
+    class that represent connection between 2 nodes from 2 layers in structure of Neural Network.
+    Innovation number of its instances is created from innovation numbers of Nodes.
+    No two other nodes will be able to generate the same inv number.
+
+    inv number does not to be explicitly declared, because equal function do it for us. (?)
+     */
+
     private NodeGene from;
     private NodeGene to;
 
@@ -48,6 +56,10 @@ public class ConnectionGene extends Gene {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+
+    //2 connectionNodes are equal if their creating nodes have the same inv number
+    @Override
     public boolean equals(Object o){
         if(!(o instanceof ConnectionGene)) return false;
         ConnectionGene c = (ConnectionGene) o;

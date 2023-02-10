@@ -2,10 +2,14 @@ package genomePac;
 
 import NNCalculations.Calculator;
 import data_structures.RandomHashSet;
-import javafx.scene.Node;
 import neat_pac.Neat;
 
 public class Genome {
+
+    /*
+     * class containing information about all genes present in given individual.
+     */
+
 
     private RandomHashSet<ConnectionGene> connections = new RandomHashSet<>();
     private RandomHashSet<NodeGene> nodes = new RandomHashSet<>();
@@ -18,12 +22,10 @@ public class Genome {
     }
 
 
-    /**
-     * calculated the distance between this genome g1 and a second genome g2
-     *  - g1 must have the highest innovation number!
-     *
-     * @param g2
-     * @return
+    /*
+     * Calculated the distance between this genome g1 and a second genome g2.
+     * The higher the value, the less similar the genomes are.
+     * The formula is from the article on which the NEAT implementation is based.
      */
     public double distance(Genome g2){
 
@@ -47,10 +49,10 @@ public class Genome {
         int index_g1 = 0;
         int index_g2 = 0;
 
-        int disjoint = 0;
-        int excess = 0;
+        int disjointGenes = 0;
         double weight_diff = 0;
-        int similar = 0;
+        int matchingGenes = 0;
+        int excessGenes;
 
 
         while(index_g1 < g1.getConnections().size() && index_g2 < g2.getConnections().size()){
@@ -62,44 +64,42 @@ public class Genome {
             int in2 = gene2.getInnovation_number();
 
             if(in1 == in2){
-                //similargene
-                similar ++;
+                matchingGenes ++;
                 weight_diff += Math.abs(gene1.getWeight() - gene2.getWeight());
                 index_g1++;
                 index_g2++;
             }else if(in1 > in2){
-                //disjoint gene of b
-                disjoint ++;
+                disjointGenes ++;
                 index_g2++;
             }else{
-                //disjoint gene of a
-                disjoint ++;
+                disjointGenes ++;
                 index_g1 ++;
             }
         }
 
-        weight_diff /= Math.max(1,similar);
-        excess = g1.getConnections().size() - index_g1;
+        weight_diff /= Math.max(1,matchingGenes);
+        excessGenes = g1.getConnections().size() - index_g1;
 
         double N = Math.max(g1.getConnections().size(), g2.getConnections().size());
-        if(N < 20){
-            N = 1;
-        }
+        if(N < 20) N = 1;
 
-        return neat.getC1()  * disjoint / N + neat.getC2() * excess / N + neat.getC3() * weight_diff;
+
+        return neat.getC1()  * disjointGenes / N + neat.getC2() * excessGenes / N + neat.getC3() * weight_diff;
 
     }
 
-    /**
-     * creates a new genome.
-     * g1 should have the higher score
-     *  - take all the genes of a
-     *  - if there is a genome in a that is also in b, choose randomly
-     *  - do not take disjoint genes of b
-     *  - take excess genes of a if they exist
-     * @param g1
-     * @param g2
-     * @return
+    /*
+     * Creating a new genome through crossover:.
+     *  - g1 should have the higher score
+     *  - take all the genes of g1
+     *  - if there is a gen in g1 that is also in g2, choose randomly (50 percent chance)
+     *  - do not take disjoint genes of g2
+     *  - take excess and disjoint genes of g1 if they exist
+     *
+     *
+     * In all method which creates new genome we do not want to add genes directly but add
+     * returned instances from neat.getConnection(Gene gen) because we want to keep track if the inv number for this
+     * connection already exist or should be created.
      */
     public static Genome crossOver(Genome g1, Genome g2){
         Neat neat = g1.getNeat();
@@ -127,10 +127,8 @@ public class Genome {
                 index_g2++;
             }else if(in1 > in2){
                 //genome.getConnections().add(neat.getConnection(gene2));
-                //disjoint gene of b
                 index_g2++;
             }else{
-                //disjoint gene of a
                 genome.getConnections().add(neat.getConnection(gene1));
                 index_g1 ++;
             }
@@ -147,6 +145,7 @@ public class Genome {
             genome.getNodes().add(c.getTo());
         }
 
+        /*
         Calculator calculator = new Calculator(genome);
         if(calculator.calculate(1,1,1,1,1,1,1,1,1,1)[0] == 0.5 && genome.getConnections().size() != 0){
             System.out.println(g1.getConnections().getData());
@@ -155,6 +154,8 @@ public class Genome {
 
             System.exit(-1);
         }
+
+         */
 
         return genome;
     }
@@ -214,7 +215,7 @@ public class Genome {
         NodeGene from = con.getFrom();
         NodeGene to = con.getTo();
 
-        NodeGene middle = neat.getNode();
+        NodeGene middle = neat.CreateNewNode();
         middle.setX((from.getX() + to.getX()) / 2);
         middle.setY((from.getY() + to.getY()) / 2 + Math.random() * 0.1 - 0.05);
 

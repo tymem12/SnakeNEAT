@@ -2,7 +2,7 @@ package data_structures;
 
 import java.util.ArrayList;
 
-//class witch will be useful when we reproduce ours individuals. Base concept is behind random method
+//structure used to store out species and corresponding scores values.
 public class RandomSelector<T> {
 
     private ArrayList<T> objects = new ArrayList<>();
@@ -16,7 +16,7 @@ public class RandomSelector<T> {
         total_score += score;
     }
 
-    //method which will return random specie, but with bigger probability if the score value of the whole specie is bigger
+    //method return a "random" specie, based on the roulette method (bigger score means bigger probability of being chosen)
     public T random(){
         double v = Math.random() * total_score;
         double c = 0;

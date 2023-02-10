@@ -38,14 +38,15 @@ public class HelloApplication extends Application {
     }
 
     public static void main(String[] args) {
-        //launch();
+      //  launch();
+
 
         Neat neat = new Neat(10, 1, 100);
         double[] in = new double[10];
         for (int i = 0; i < 10; i++) in[i] = Math.random();
 
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 5; i++) {
 
             for (Individual individual : neat.getClients().getData()) {
                 double score = individual.calculate(in)[0];
@@ -55,6 +56,8 @@ public class HelloApplication extends Application {
             neat.printSpecies();
         }
         System.out.println("koiec");
+
+
     }
 
 

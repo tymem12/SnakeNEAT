@@ -7,12 +7,16 @@ import genomePac.Genome;
 import genomePac.NodeGene;
 
 import java.util.HashMap;
+/*
+ It is the most important class that keeps track of everything what is happening with our simulation.
+ Most important is HashMap<ConnectionGene,Integer> which keeps information about which Connection have which innovation
+ number.
+ */
 
-// It is the most important class that keeps track of everything what is happening with our simulation.
-// It also knows about every connection and every Node which was created.
 public class Neat {
 
     public static final int MAX_NODES = (int) Math.pow(2, 20);
+
 
 
     private double C1 = 1, C2 = 1, C3 = 1;
@@ -30,7 +34,7 @@ public class Neat {
     private double PROBABILITY_MUTATE_WEIGHT_RANDOM = 0.02;
     private double PROBABILITY_MUTATE_TOGGLE_LINK = 0;
 
-    private HashMap<ConnectionGene, ConnectionGene> all_connections = new HashMap<>();
+    private HashMap<ConnectionGene,Integer> all_connections = new HashMap<>();
     private RandomHashSet<NodeGene> all_nodes = new RandomHashSet<>();
 
     private RandomHashSet<Individual> clients = new RandomHashSet<>();
@@ -62,13 +66,13 @@ public class Neat {
         this.clients.clear();
 
         for (int i = 0; i < input_size; i++) {
-            NodeGene n = getNode();
+            NodeGene n = CreateNewNode();
             n.setX(0.1);
             n.setY((i + 1) / (double) (input_size + 1));
         }
 
         for (int i = 0; i < output_size; i++) {
-            NodeGene n = getNode();
+            NodeGene n = CreateNewNode();
             n.setX(0.9);
             n.setY((i + 1) / (double) (output_size + 1));
         }
@@ -81,11 +85,29 @@ public class Neat {
         }
     }
 
+    private Genome generateWeights(Genome genom){
+        for(int i =0; i< all_nodes.size(); i++){
+            if(all_nodes.get(i).getX() == 0.1){
+                for(int j =0; j< all_nodes.size(); j++){
+                    if(all_nodes.get(j).getX() == 0.9){
+                        ConnectionGene con = getConnection(all_nodes.get(i), all_nodes.get(j));
+                        con.setWeight(Math.random());
+                        genom.getConnections().add(con);
+                    }
+                }
+            }
+        }
+        return genom;
+    }
+
     public Individual getClient(int index) {
         return clients.get(index);
     }
 
 
+    /*
+    method return copy of connection we pass as argument.
+     */
     public static ConnectionGene getConnection(ConnectionGene con) {
         ConnectionGene c = new ConnectionGene(con.getFrom(), con.getTo());
         c.setInnovation_number(con.getInnovation_number());
@@ -98,16 +120,17 @@ public class Neat {
         ConnectionGene connectionGene = new ConnectionGene(node1, node2);
 
         if (all_connections.containsKey(connectionGene)) {
-            connectionGene.setInnovation_number(all_connections.get(connectionGene).getInnovation_number());
+            connectionGene.setInnovation_number(all_connections.get(connectionGene));
         } else {
             connectionGene.setInnovation_number(all_connections.size() + 1);
-            all_connections.put(connectionGene, connectionGene);
+            all_connections.put(connectionGene, connectionGene.getInnovation_number());
         }
 
         return connectionGene;
     }
 
-    public NodeGene getNode() {
+    //creating new node - used during mutations.
+    public NodeGene CreateNewNode() {
         NodeGene n = new NodeGene(all_nodes.size() + 1);
         all_nodes.add(n);
         return n;
@@ -117,7 +140,7 @@ public class Neat {
         if (id <= all_nodes.size()) {
             return all_nodes.get(id - 1);
         }
-        return getNode();
+        return CreateNewNode();
     }
 
     public void evolve() {
@@ -129,6 +152,37 @@ public class Neat {
         mutate();
         for (Individual c : clients.getData()) {
             c.generate_calculator();
+        }
+    }
+    private void gen_species() {
+        for (Species s : species.getData()) {
+            s.reset();
+        }
+
+        for (Individual c : clients.getData()) {
+            if (c.getSpecies() != null) continue;
+
+
+            boolean found = false;
+            for (Species s : species.getData()) {
+                if (s.put(c)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                species.add(new Species(c));
+            }
+        }
+
+        for (Species s : species.getData()) {
+            s.evaluate_score();
+        }
+    }
+
+    private void kill() {
+        for (Species s : species.getData()) {
+            s.kill(1 - SURVIVORS);
         }
     }
 
@@ -169,37 +223,6 @@ public class Neat {
         }
     }
 
-    private void gen_species() {
-        for (Species s : species.getData()) {
-            s.reset();
-        }
-
-        for (Individual c : clients.getData()) {
-            if (c.getSpecies() != null) continue;
-
-
-            boolean found = false;
-            for (Species s : species.getData()) {
-                if (s.put(c)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                species.add(new Species(c));
-            }
-        }
-
-        for (Species s : species.getData()) {
-            s.evaluate_score();
-        }
-    }
-
-    private void kill() {
-        for (Species s : species.getData()) {
-            s.kill(1 - SURVIVORS);
-        }
-    }
 
 
     public double getCP() {

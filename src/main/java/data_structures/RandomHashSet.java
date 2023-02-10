@@ -6,21 +6,27 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class RandomHashSet<T> {
+/*
+    hashSet - only because we can check if element is in our structure in O(1) complexity instead of O(n), but
+    right now I am not sure if it is worth an effort
+ */
 
-   private HashSet<T> set;
+
+
+  // private HashSet<T> set;
    private ArrayList<T> data;
 
     public RandomHashSet(){
-        set = new HashSet<>();
+        //set = new HashSet<>();
         data = new ArrayList<>();
     }
 
     public boolean contains(T object){
-        return set.contains(object);
+        return data.contains(object);
     }
 
     public T random_element(){
-        if(set.size() > 0) return data.get((int) (Math.random() * size()));
+        if(data.size() > 0) return data.get((int) (Math.random() * size()));
         else return null;
     }
 
@@ -29,8 +35,8 @@ public class RandomHashSet<T> {
     }
 
     public void add(T object){
-        if(!set.contains(object)){
-            set.add(object);
+        if(!data.contains(object)){
+            //set.add(object);
             data.add(object);
         }
     }
@@ -41,27 +47,27 @@ public class RandomHashSet<T> {
             int innov = ((Gene)data.get(i)).getInnovation_number();
             if(object.getInnovation_number() < innov){
                 data.add(i, (T) object);
-                set.add((T) object);
+              //  set.add((T) object);
                 return;
             }
         }
         data.add((T) object);
-        set.add((T) object);
+        //set.add((T) object);
     }
 
     public void remove(T object){
-        set.remove(object);
+        //set.remove(object);
         data.remove(object);
     }
     public void remove(int index){
         if(index < 0 || index > size()) return;
-        set.remove(data.get(index));
+        //set.remove(data.get(index));
         data.remove(index);
     }
 
     public void clear(){
         data.clear();
-        set.clear();
+        //set.clear();
     }
 
     public T get(int index){

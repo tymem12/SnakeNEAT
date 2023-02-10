@@ -15,6 +15,9 @@ public class Individual {
         this.calculator = new Calculator(genome);
     }
 
+    /*
+    method we call when we want to calculate the result on NN for given input
+     */
     public double[] calculate(double... input){
         if(this.calculator == null) generate_calculator();
         return this.calculator.calculate(input);
